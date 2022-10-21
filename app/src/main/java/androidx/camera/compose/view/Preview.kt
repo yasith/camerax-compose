@@ -49,12 +49,6 @@ fun Preview(
                         onPreviewTapped(offset.x, offset.y)
                     }
                 )
-                forEachGesture {
-                    awaitPointerEventScope {
-                        val position = awaitFirstDown().position
-                        onPreviewTapped(position.x, position.y)
-                    }
-                }
             }
             .transformable(state = transformableState),
         factory = { previewView },
