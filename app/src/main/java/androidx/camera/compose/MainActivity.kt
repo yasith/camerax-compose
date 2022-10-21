@@ -2,6 +2,7 @@ package androidx.camera.compose
 
 import android.Manifest
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.camera.compose.model.CameraState
@@ -11,6 +12,7 @@ import androidx.camera.compose.view.Preview
 import androidx.camera.compose.view.PreviewState
 import androidx.camera.compose.viewmodel.CameraComposeViewModel
 import androidx.camera.core.FocusMeteringAction
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
@@ -20,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.*
@@ -87,7 +90,14 @@ private fun ViewFinder(viewModel: CameraComposeViewModel = viewModel()) {
 
             val previewState = PreviewState()
             Preview(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().pointerInput(Unit) {
+                    detectTapGestures(
+                        onDoubleTap = { offset ->
+                            Log.d(TAG, "onDoubleTap $offset")
+                            viewModel.flipCamera()
+                        }
+                    )
+                },
                 state = previewState,
                 onPreviewReady = { lifecycleOwner, surfaceProvider ->
                     viewModel.startPreview(
@@ -96,6 +106,7 @@ private fun ViewFinder(viewModel: CameraComposeViewModel = viewModel()) {
                     )
                 },
                 onTap= { x, y ->
+                    Log.d(TAG, "onTap: $x, $y")
                     val meteringPointFactory = previewState.meteringPointFactory
                     val meteringPoint = meteringPointFactory.createPoint(x, y)
                     val focusMeteringAction = FocusMeteringAction.Builder(meteringPoint).build()
