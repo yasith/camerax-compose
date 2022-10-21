@@ -3,10 +3,7 @@ package androidx.camera.compose.view
 import android.util.Log
 import androidx.camera.core.Preview
 import androidx.camera.view.PreviewView
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.forEachGesture
-import androidx.compose.foundation.gestures.rememberTransformableState
-import androidx.compose.foundation.gestures.transformable
+import androidx.compose.foundation.gestures.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
@@ -17,12 +14,14 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
 
+private const val TAG = "Preview"
+
 @Composable
 fun Preview(
     modifier: Modifier = Modifier,
     state: PreviewState? = null,
     onPreviewReady: (LifecycleOwner, Preview.SurfaceProvider) -> Unit,
-    onTap: (x: Float, y: Float) -> Unit,
+    onPreviewTapped: (x: Float, y: Float) -> Unit,
     onZoom: (Float) -> Unit,
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -36,6 +35,7 @@ fun Preview(
 
     DisposableEffect(lifecycleOwner) {
         onDispose {
+            Log.d(TAG, "onDispose")
             state?.clear()
         }
     }
@@ -43,10 +43,16 @@ fun Preview(
     AndroidView(
         modifier = modifier
             .pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = { offset ->
+                        Log.d(TAG, "onTap $offset")
+                        onPreviewTapped(offset.x, offset.y)
+                    }
+                )
                 forEachGesture {
                     awaitPointerEventScope {
                         val position = awaitFirstDown().position
-                        onTap(position.x, position.y)
+                        onPreviewTapped(position.x, position.y)
                     }
                 }
             }

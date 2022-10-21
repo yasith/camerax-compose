@@ -105,7 +105,7 @@ private fun ViewFinder(viewModel: CameraComposeViewModel = viewModel()) {
                         surfaceProvider
                     )
                 },
-                onTap= { x, y ->
+                onPreviewTapped = { x, y ->
                     Log.d(TAG, "onTap: $x, $y")
                     val meteringPointFactory = previewState.meteringPointFactory
                     val meteringPoint = meteringPointFactory.createPoint(x, y)
