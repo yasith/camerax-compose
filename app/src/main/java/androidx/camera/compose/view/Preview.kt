@@ -1,7 +1,6 @@
 package androidx.camera.compose.view
 
 import android.util.Log
-import androidx.camera.core.FocusMeteringAction
 import androidx.camera.core.Preview
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -23,7 +22,7 @@ fun Preview(
     modifier: Modifier = Modifier,
     state: PreviewState? = null,
     onPreviewReady: (LifecycleOwner, Preview.SurfaceProvider) -> Unit,
-    onTapToFocus: (FocusMeteringAction) -> Unit,
+    onTap: (x: Float, y: Float) -> Unit,
     onZoom: (Float) -> Unit,
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -47,11 +46,7 @@ fun Preview(
                 forEachGesture {
                     awaitPointerEventScope {
                         val position = awaitFirstDown().position
-
-                        val meteringPointFactory = previewView.meteringPointFactory
-                        val meteringPoint = meteringPointFactory.createPoint(position.x, position.y)
-                        val focusMeteringAction = FocusMeteringAction.Builder(meteringPoint).build()
-                        onTapToFocus(focusMeteringAction)
+                        onTap(position.x, position.y)
                     }
                 }
             }
@@ -77,7 +72,7 @@ class PreviewState {
         Log.d("PreviewState", "Initializing PreviewState")
     }
 
-    fun clear() { _previewView = null }
+    internal fun clear() { _previewView = null }
 
     val bitmap
         get() = previewView.bitmap

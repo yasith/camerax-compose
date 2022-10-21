@@ -10,21 +10,20 @@ import androidx.camera.compose.ui.theme.CameraXComposeTheme
 import androidx.camera.compose.view.Preview
 import androidx.camera.compose.view.PreviewState
 import androidx.camera.compose.viewmodel.CameraComposeViewModel
+import androidx.camera.core.FocusMeteringAction
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AddCircle
-import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.Refresh
-import androidx.compose.runtime.*
+import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.*
 import kotlinx.coroutines.flow.MutableStateFlow
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.tooling.preview.Preview
 
 
 private const val TAG = "MainActivity"
@@ -77,7 +76,7 @@ private fun CameraPermission(cameraPermissionState : PermissionState) {
 }
 
 @Composable
-private fun ViewFinder(viewModel: CameraComposeViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+private fun ViewFinder(viewModel: CameraComposeViewModel = viewModel()) {
 
     val cameraUiState : CameraUiState by viewModel.cameraUiState.collectAsState()
 
@@ -96,7 +95,11 @@ private fun ViewFinder(viewModel: CameraComposeViewModel = androidx.lifecycle.vi
                         surfaceProvider
                     )
                 },
-                onTapToFocus = { focusMeteringAction -> viewModel.onTapToFocus(focusMeteringAction) },
+                onTap= { x, y ->
+                    val meteringPointFactory = previewState.meteringPointFactory
+                    val meteringPoint = meteringPointFactory.createPoint(x, y)
+                    val focusMeteringAction = FocusMeteringAction.Builder(meteringPoint).build()
+                    viewModel.onTapToFocus(focusMeteringAction) },
                 onZoom = { zoomScale -> viewModel.onZoom(zoomScale) }
             )
         }

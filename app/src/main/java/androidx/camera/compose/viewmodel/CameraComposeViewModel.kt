@@ -2,15 +2,12 @@ package androidx.camera.compose.viewmodel
 
 import android.app.Application
 import android.util.Log
-import android.view.Display
 import androidx.camera.compose.model.CameraState
 import androidx.camera.compose.model.CameraUiState
 import androidx.camera.compose.model.CaptureState
 import androidx.camera.core.*
 import androidx.camera.core.Preview.SurfaceProvider
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.view.PreviewView
-import androidx.core.math.MathUtils
 import androidx.core.math.MathUtils.clamp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LifecycleOwner
@@ -129,7 +126,7 @@ class CameraComposeViewModel(application: Application) : AndroidViewModel(applic
     }
 
     fun onTapToFocus(focusMeteringAction: FocusMeteringAction) {
-        Log.d(TAG, "onTapToFocus ${focusMeteringAction.toString()}")
+        Log.d(TAG, "onTapToFocus $focusMeteringAction")
         camera.cameraControl.startFocusAndMetering(focusMeteringAction)
     }
 
