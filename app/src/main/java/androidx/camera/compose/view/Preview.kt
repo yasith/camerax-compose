@@ -20,9 +20,9 @@ private const val TAG = "Preview"
 fun Preview(
     modifier: Modifier = Modifier,
     state: PreviewState? = null,
-    onPreviewReady: (LifecycleOwner, Preview.SurfaceProvider) -> Unit,
-    onPreviewTapped: (x: Float, y: Float) -> Unit,
-    onZoom: (Float) -> Unit,
+    onPreviewReady: (LifecycleOwner, Preview.SurfaceProvider) -> Unit = {_,_ -> },
+    onPreviewTapped: (x: Float, y: Float) -> Unit = {_,_ -> },
+    onZoom: (Float) -> Unit = {},
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
