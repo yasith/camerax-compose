@@ -12,6 +12,7 @@ import androidx.camera.compose.view.CameraPreview
 import androidx.camera.compose.view.CameraPreviewState
 import androidx.camera.compose.viewmodel.CameraComposeViewModel
 import androidx.camera.core.FocusMeteringAction
+import androidx.camera.core.Preview.SurfaceProvider
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
@@ -19,18 +20,15 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.*
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 
 private const val TAG = "MainActivity"
@@ -86,11 +84,12 @@ private fun CameraPermission(cameraPermissionState : PermissionState) {
 private fun ViewFinder(viewModel: CameraComposeViewModel = viewModel()) {
 
     val cameraUiState : CameraUiState by viewModel.cameraUiState.collectAsState()
-    val cameraPreviewState = CameraPreviewState()
 
-    LaunchedEffect(key1 = cameraPreviewState, block = {
-        viewModel.startPreview(cameraPreviewState.getLifecycleOwner(), cameraPreviewState.getSurfaceProvider())
-    })
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    val onSurfaceProviderReady : (SurfaceProvider) -> Unit = {
+        viewModel.startPreview(lifecycleOwner, it)
+    }
 
     if (cameraUiState.cameraState == CameraState.NOT_READY) {
         viewModel.initializeCamera()
@@ -107,13 +106,13 @@ private fun ViewFinder(viewModel: CameraComposeViewModel = viewModel()) {
                             }
                         )
                     },
-                state = cameraPreviewState,
                 onTap = { x, y, meteringPointFactory ->
                     Log.d(TAG, "onTap: $x, $y")
                     val meteringPoint = meteringPointFactory.createPoint(x, y)
                     val focusMeteringAction = FocusMeteringAction.Builder(meteringPoint).build()
                     viewModel.onTapToFocus(focusMeteringAction) },
-                onZoom = { zoomScale -> viewModel.onZoom(zoomScale) }
+                onZoom = { zoomScale -> viewModel.onZoom(zoomScale) },
+                onSurfaceProviderReady = onSurfaceProviderReady
             )
         }
     }
