@@ -71,7 +71,7 @@ class CameraComposeViewModel(application: Application) : AndroidViewModel(applic
         lifecycleOwner: LifecycleOwner,
         surfaceProvider: SurfaceProvider
     ) {
-        Log.d(TAG, "starting preview")
+        Log.d(TAG, "startPreview")
         val currentCameraUiState = _cameraUiState.value
 
         val cameraSelector = cameraLensToSelector(currentCameraUiState.cameraLens)

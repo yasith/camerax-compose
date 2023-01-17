@@ -9,9 +9,7 @@ import androidx.camera.compose.model.CameraState
 import androidx.camera.compose.model.CameraUiState
 import androidx.camera.compose.ui.theme.CameraXComposeTheme
 import androidx.camera.compose.view.CameraPreview
-import androidx.camera.compose.view.CameraPreviewState
 import androidx.camera.compose.viewmodel.CameraComposeViewModel
-import androidx.camera.core.FocusMeteringAction
 import androidx.camera.core.Preview.SurfaceProvider
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -82,12 +80,14 @@ private fun CameraPermission(cameraPermissionState : PermissionState) {
 
 @Composable
 private fun ViewFinder(viewModel: CameraComposeViewModel = viewModel()) {
+    Log.d(TAG, "ViewFinder")
 
     val cameraUiState : CameraUiState by viewModel.cameraUiState.collectAsState()
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
     val onSurfaceProviderReady : (SurfaceProvider) -> Unit = {
+        Log.d(TAG, "onSurfaceProviderReady")
         viewModel.startPreview(lifecycleOwner, it)
     }
 
@@ -106,12 +106,6 @@ private fun ViewFinder(viewModel: CameraComposeViewModel = viewModel()) {
                             }
                         )
                     },
-                onTap = { x, y, meteringPointFactory ->
-                    Log.d(TAG, "onTap: $x, $y")
-                    val meteringPoint = meteringPointFactory.createPoint(x, y)
-                    val focusMeteringAction = FocusMeteringAction.Builder(meteringPoint).build()
-                    viewModel.onTapToFocus(focusMeteringAction) },
-                onZoom = { zoomScale -> viewModel.onZoom(zoomScale) },
                 onSurfaceProviderReady = onSurfaceProviderReady
             )
         }
