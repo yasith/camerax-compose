@@ -106,7 +106,10 @@ private fun ViewFinder(viewModel: CameraComposeViewModel = viewModel()) {
                             }
                         )
                     },
-                onSurfaceProviderReady = onSurfaceProviderReady
+                onSurfaceProviderReady = onSurfaceProviderReady,
+                onRequestBitmapReady = {
+                    val bitmap = it.invoke()
+                }
             )
         }
     }
